@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -33,5 +34,5 @@ public abstract class Controller {
     /**
      * Method for loading a javafx view and starting a wait for messages.
      */
-    public abstract void loadView();
+    public abstract void loadView() throws IOException;
 }
