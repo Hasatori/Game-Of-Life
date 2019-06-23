@@ -1,5 +1,6 @@
 package gameoflife.controller;
 
+import gameoflife.model.GameOfLife;
 import gameoflife.view.MainView;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class MainViewController extends Controller {
     private MainView view;
+    private GameOfLife gameOfLife;
 
     /**
      * @param stage stage
@@ -25,16 +27,21 @@ public class MainViewController extends Controller {
         stage.show();
     }
 
-    public void startGame(double speed, List<Node> selected) {
-
+    public void startGame(double speed, List<Node> grid, List<Node> selected) {
+        this.gameOfLife = new GameOfLife((int) Math.round(speed), grid, selected, this);
+        gameOfLife.start();
     }
 
     public void stopGame() {
-
+        if (gameOfLife != null) {
+            gameOfLife.interrupt();
+        }
     }
 
     public void changeSpeed(double speed) {
-
+        if (gameOfLife != null) {
+            gameOfLife.setSpeed((int) Math.round(speed));
+        }
     }
 
     public void changeGridSize(double gridSize) {
