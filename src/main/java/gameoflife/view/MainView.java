@@ -2,6 +2,7 @@ package gameoflife.view;
 
 import gameoflife.controller.MainViewController;
 import gameoflife.utils.ResourceLoader;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -22,7 +23,9 @@ public class MainView extends View {
     private final Slider speedSlider, gridSizeSlider;
     private final Pane centerPane;
     private final GridPane gridPane = new GridPane();
-    private final List<Node> selected = new ArrayList<>();
+    private List<Node> selected = new ArrayList<>();
+    private static final String notSelectedStyle = "-fx-background-color:white";
+    private static final String selectedStyle = "-fx-background-color:red";
 
     public MainView(MainViewController mainViewController) throws IOException {
         super(FXMLLoader.load(ResourceLoader.gerResourceURL("mainView.fxml")));
@@ -34,7 +37,7 @@ public class MainView extends View {
         this.centerPane = (Pane) lookup("#centerPane");
 
         startButton.setOnAction((event -> {
-            controller.startGame(speedSlider.getValue(), gridSizeSlider.getValue());
+
         }));
 
         stopButton.setOnAction(event -> {
@@ -68,24 +71,35 @@ public class MainView extends View {
     private Node[] getRow(double count) {
         Node[] result = new Node[(int) Math.round(count + 1)];
         double size = Math.ceil(centerPane.getPrefHeight() / count);
-        String notSelected = "-fx-background-color:white";
-        String selected = "-fx-background-color:red";
+
         for (int i = 0; i <= count; i++) {
             Pane pane = new Pane();
             pane.setOnMouseClicked(event -> {
-                if (pane.getStyle().equals(selected)) {
+                if (pane.getStyle().equals(selectedStyle)) {
                     this.selected.add(pane);
-                    pane.setStyle(notSelected);
+                    pane.setStyle(notSelectedStyle);
                 } else {
                     this.selected.remove(pane);
-                    pane.setStyle(selected);
+                    pane.setStyle(selectedStyle);
                 }
 
             });
-            pane.setStyle(notSelected);
+            pane.setStyle(notSelectedStyle);
             pane.setMinSize(size, size);
             result[i] = pane;
         }
         return result;
+    }
+
+    public void select(List<Node> selected) {
+        Platform.runLater(() -> {
+            this.selected.removeAll(selected);
+            this.selected.forEach(node -> {
+                node.setStyle(notSelectedStyle);
+            });
+            this.selected = selected;
+        });
+
+
     }
 }
