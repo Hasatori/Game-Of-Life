@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="900.0" maxWidth="902.0" minHeight="885.0" minWidth="890.0" prefHeight="891.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="989.0" maxWidth="1164.0" minHeight="847.0" minWidth="890.0" prefHeight="847.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <VBox prefHeight="104.0" prefWidth="891.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,13 +19,13 @@
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Label prefHeight="17.0" prefWidth="44.0" text="Speed" />
-                        <Slider fx:id="speedSlider" blockIncrement="1.0" max="5.0" min="1.0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                        <Slider fx:id="speedSlider" blockIncrement="1.0" max="10.0" min="1.0" showTickLabels="true" showTickMarks="true" value="1.0" />
                      </children>
                   </VBox>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Label text="Grid size" />
-                        <Slider fx:id="gridSizeSlider" max="80.0" min="20.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="20.0" />
+                        <Slider fx:id="gridSizeSlider" max="80.0" min="40.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="20.0" />
                      </children>
                   </VBox>
                </children>
@@ -43,6 +43,9 @@
       </VBox>
    </bottom>
    <center>
-      <Pane fx:id="centerPane" maxHeight="750.0" maxWidth="750.0" prefHeight="750.0" prefWidth="750.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="centerPane" maxHeight="750.0" maxWidth="750.0" prefHeight="660.0" prefWidth="964.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets top="20.0" />
+         </BorderPane.margin></Pane>
    </center>
 </BorderPane>

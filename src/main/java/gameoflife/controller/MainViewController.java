@@ -37,6 +37,9 @@ public class MainViewController extends Controller {
             gameOfLife.interrupt();
         }
     }
+    public void next(){
+
+    }
 
     public void changeSpeed(double speed) {
         if (gameOfLife != null) {
@@ -44,11 +47,8 @@ public class MainViewController extends Controller {
         }
     }
 
-    public void changeGridSize(double gridSize) {
-
-    }
-
     public void setSelected(List<Node> selected) {
         view.select(selected);
     }
+
 }

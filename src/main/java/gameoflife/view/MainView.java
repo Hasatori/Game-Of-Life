@@ -12,6 +12,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class MainView extends View {
             controller.changeSpeed(speedSlider.getValue());
         });
 
+
         setGridSize(gridSizeSlider.getMin());
         centerPane.getChildren().add(gridPane);
     }
@@ -74,30 +76,39 @@ public class MainView extends View {
     private void setGridSize(double count) {
         gridPane.getChildren().clear();
         gridPane.setAlignment(Pos.CENTER);
+
         for (int i = 0; i < count; i++) {
-            gridPane.addRow(i, getRow(count,i));
+            gridPane.addRow(i, getRow(count, i));
         }
         centerPane.getStyleClass().add("-fx-background-color:black");
         gridPane.setGridLinesVisible(false);
         gridPane.setGridLinesVisible(true);
     }
 
-    private Node[] getRow(double count,int columnNumber) {
+    private Node[] getRow(double count, int rowNumber) {
         Node[] result = new Node[(int) Math.round(count)];
         double size = Math.ceil(centerPane.getPrefHeight() / count);
 
         for (int i = 0; i < count; i++) {
             Pane pane = new Pane();
             pane.setOnMouseEntered(event -> {
-                if(event.isAltDown()){
-                    setPaneAction(pane);
+                if (event.isAltDown() && pane.getStyle().equals(notSelectedStyle)) {
+                    this.selected.add(pane);
+                    pane.setStyle(selectedStyle);
+                }
+                if (event.isControlDown() && pane.getStyle().equals(selectedStyle)) {
+                    this.selected.add(pane);
+                    pane.setStyle(notSelectedStyle);
                 }
             });
             pane.setOnMouseClicked(event -> {
                 setPaneAction(pane);
             });
             pane.setStyle(notSelectedStyle);
-           // pane.getChildren().add(new Text(i+","+columnNumber));
+          /*  Text text=new Text(rowNumber+","+i);
+            text.setTextAlignment(TextAlignment.CENTER);
+            pane.getChildren().add(text);*/
+
             pane.setMinSize(size, size);
             result[i] = pane;
         }
