@@ -5,6 +5,7 @@ import gameoflife.view.MainView;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class MainViewController extends Controller {
         stage.show();
     }
 
-    public void startGame(double speed, List<Node> grid, List<Node> selected) {
-        this.gameOfLife = new GameOfLife((int) Math.round(speed), grid, selected, this);
+    public void startGame(double speed, int[][] grid) {
+        this.gameOfLife = new GameOfLife((int) Math.round(speed), grid, this);
         gameOfLife.start();
     }
 
@@ -37,7 +38,8 @@ public class MainViewController extends Controller {
             gameOfLife.interrupt();
         }
     }
-    public void next(){
+
+    public void next() {
 
     }
 
@@ -47,8 +49,8 @@ public class MainViewController extends Controller {
         }
     }
 
-    public void setSelected(List<Node> selected) {
-        view.select(selected);
+    public void setSelected(List<Point> deselected, List<Point> selected) {
+        view.select(deselected, selected);
     }
 
 }

@@ -1,34 +1,42 @@
 package gameoflife.model;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import gameoflife.controller.MainViewController;
-import javafx.scene.Node;
-import javafx.scene.control.DialogPane;
-import javafx.scene.layout.GridPane;
 
+import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GameOfLife extends Thread {
 
 
-    private final List<Node> selected;
-    private final List<Node> grid;
+    private final List<Point> selected = new ArrayList<>();
+    private final int[][] grid;
     private final MainViewController mainViewController;
     private final int count;
     private int speed;
     private static final int MAX_TIME = 300;
-    private List<Node> compressedGrid = new ArrayList<>();
+    private List<Point> toBeBorn, toDie = new ArrayList<>();
+    private List<Point> compressedGrid = new ArrayList<>();
 
-    public GameOfLife(int speed, List<Node> grid, List<Node> selected, MainViewController mainViewController) {
+    public GameOfLife(int speed, int[][] grid, MainViewController mainViewController) {
         this.grid = grid;
         this.speed = speed;
-        this.selected = selected;
         this.mainViewController = mainViewController;
-        this.count = (int) Math.round(Math.sqrt(grid.size()));
-        System.out.println(count);
+        this.count = grid.length;
+        fillSelected();
+    }
+
+    private void fillSelected() {
+
+        for (int row = 0; row < count; row++) {
+            for (int col = 0; col < count; col++) {
+                if (grid[row][col] == 1) {
+                    selected.add(new Point(row, col));
+
+                }
+            }
+        }
     }
 
     @Override
@@ -36,82 +44,79 @@ public class GameOfLife extends Thread {
 
         try {
             while (!isInterrupted()) {
-                mainViewController.setSelected(nextStep());
+                compressedGrid = getCompressedGrid();
+                toBeBorn = toBeBorn();
+                toDie = toDie();
+                mainViewController.setSelected(toDie, toBeBorn);
+                updateSelected();
                 Thread.sleep(MAX_TIME / speed);
             }
-        } catch (InterruptedException ignored) {
-
-        } catch (Exception e) {
+        } catch (InterruptedException | ArrayIndexOutOfBoundsException ignored) {
 
         }
+    }
+
+    private void updateSelected() {
+        selected.addAll(toBeBorn);
+        selected.removeAll(toDie);
+        toBeBorn.forEach(point -> {
+            grid[point.x][point.y] = 1;
+        });
+        toDie.forEach(point -> {
+            grid[point.x][point.y] = 0;
+        });
     }
 
     public void setSpeed(int speed) {
         this.speed = speed;
     }
 
-    private synchronized List<Node> nextStep() {
-        List<Node> toRemove = new ArrayList<>();
-        List<Node> toBeBorn = new ArrayList<>();
-        System.out.println(compressedGrid.size());
-        compressedGrid = getCompressedGrid();
-        compressedGrid.forEach(node -> {
-            int numberOfNeighbours = getNumberOfNeighbours(node);
-            if (!selected.contains(node) && numberOfNeighbours == 3) {
-                toBeBorn.add(node);
+    private List<Point> toBeBorn() {
+        List<Point> toBeBorn = new ArrayList<>();
+        compressedGrid.forEach(point -> {
+            int numberOfNeighbours = getNumberOfNeighbours(point);
+            if (!selected.contains(point) && numberOfNeighbours == 3) {
+                toBeBorn.add(point);
             }
         });
-      /*  System.out.printf("To be born:");
-        toBeBorn.forEach(cell -> {
-            System.out.println(GridPane.getRowIndex(cell) + ", " + GridPane.getColumnIndex(cell));
-        });*/
-        selected.forEach(node -> {
-            int numberOfNeighbours = getNumberOfNeighbours(node);
-            if (numberOfNeighbours > 3 || numberOfNeighbours < 2) {
-                toRemove.add(node);
-            }
-        });
-        /*System.out.printf("To be deleted:");
-        toRemove.forEach(cell -> {
-            System.out.println(GridPane.getRowIndex(cell) + ", " + GridPane.getColumnIndex(cell));
-        });*/
-        selected.addAll(toBeBorn);
-        selected.removeAll(toRemove);
-        return selected;
+
+        return toBeBorn;
     }
 
-    private List<Node> getCompressedGrid() {
-        compressedGrid.clear();
-        for (Node node : selected) {
-            // System.out.println("Selected is " + GridPane.getRowIndex(node) + ", " + GridPane.getColumnIndex(node));
-            int row = GridPane.getRowIndex(node);
-            int column = GridPane.getColumnIndex(node);
-            if (!containsNodeAlready(compressedGrid, node)) {
-                compressedGrid.add(node);
+    private List<Point> toDie() {
+        List<Point> toDie = new ArrayList<>();
+        selected.forEach(point -> {
+            int numberOfNeighbours = getNumberOfNeighbours(point);
+            if (numberOfNeighbours > 3 || numberOfNeighbours < 2) {
+                toDie.add(point);
             }
+        });
+        return toDie;
+    }
 
-            Node newNode = null;
+    private List<Point> getCompressedGrid() {
+        compressedGrid.clear();
+        for (Point point : selected) {
+            int y = point.y;
+            int x = point.x;
+            addIfNotPresent(point);
             try {
-                for (int i = 1; i > -2; i--) {
-                    newNode = grid.get(row * count + column - count + i);
+                for (int i = -1; i < 2; i++) {
+                    int top = grid[x - 1][y + i];
+                    int bottom = grid[x + 1][y + i];
 
-                    if (!containsNodeAlready(compressedGrid, newNode)) {
-                        compressedGrid.add(newNode);
+                    if (top == 0) {
+                        addIfNotPresent(new Point(x - 1, y + i));
+                    }
+                    if (bottom == 0) {
+                        addIfNotPresent(new Point(x + 1, y + i));
                     }
                 }
-                for (int i = 1; i > -2; i--) {
-                    newNode = grid.get(row * count + column + count + i);
-                    if (!containsNodeAlready(compressedGrid, newNode)) {
-                        compressedGrid.add(newNode);
+
+                for (int i = -1; i < 2; i = i + 2) {
+                    if (grid[x][y + i] == 0) {
+                        addIfNotPresent(new Point(x, y + i));
                     }
-                }
-                newNode = grid.get(row * count + column + 1);
-                if (!containsNodeAlready(compressedGrid, newNode)) {
-                    compressedGrid.add(newNode);
-                }
-                newNode = grid.get(row * count + column + -1);
-                if (!containsNodeAlready(compressedGrid, newNode)) {
-                    compressedGrid.add(newNode);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
                 break;
@@ -123,43 +128,39 @@ public class GameOfLife extends Thread {
         return compressedGrid;
     }
 
-    private boolean containsNodeAlready(List<Node> list, Node node) {
-        int rowNum = GridPane.getRowIndex(node);
-        int columnNum = GridPane.getColumnIndex(node);
-        for (Node node1 : list) {
-            if (GridPane.getColumnIndex(node1) == columnNum && GridPane.getRowIndex(node1) == rowNum) {
-                return true;
-            }
+    private void addIfNotPresent(Point point) {
+        if (compressedGrid.stream().noneMatch(o -> o.x == point.x && o.y == point.y)) {
+            compressedGrid.add(point);
         }
-        return false;
+
     }
 
-    private int getNumberOfNeighbours(Node node) {
+    private int getNumberOfNeighbours(Point point) {
         int numberOfNeighbours = 0;
-        int columnIndex = 0;
-        int rowIndex = 0;
+        int y = point.y;
+        int x = point.x;
         try {
-            columnIndex = GridPane.getColumnIndex(node);
-            rowIndex = GridPane.getRowIndex(node);
-            //  System.out.println("Getting neighbours for " + rowIndex + ", " + columnIndex);
-            for (Node node1 : compressedGrid) {
-                int compareRowIndex = GridPane.getRowIndex(node1);
-                int compareColumnIndex = GridPane.getColumnIndex(node1);
-                int rowDifference = Math.abs(compareRowIndex - rowIndex);
-                int columnDifference = Math.abs(compareColumnIndex - columnIndex);
-                //  System.out.println("Is " + compareRowIndex + ", " + compareColumnIndex +" a neighbour?");
-                if (containsNodeAlready(selected, node1) && ((columnDifference == 1 && rowDifference < 2) || (rowDifference == 1 && columnDifference < 2))) {
-                    // System.out.println("yes");
+            for (int i = -1; i < 2; i++) {
+                int top = grid[x - 1][y + i];
+                int bottom = grid[x + 1][y + i];
+                if (top == 1) {
                     numberOfNeighbours++;
-                } else {
-                    //System.out.println("no");
+                }
+                if (bottom == 1) {
+                    numberOfNeighbours++;
                 }
             }
-        } catch (NullPointerException e) {
-            return numberOfNeighbours;
-        } catch (ArrayIndexOutOfBoundsException e2) {
 
+            for (int i = -1; i < 2; i = i + 2) {
+                if (grid[x][y + i] == 1) {
+                    numberOfNeighbours++;
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+          //  e.printStackTrace();
+            return numberOfNeighbours;
         }
+
         return numberOfNeighbours;
     }
 
