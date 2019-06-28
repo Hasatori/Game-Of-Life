@@ -30,13 +30,13 @@
       </VBox>
    </bottom>
    <center>
-      <Pane fx:id="centerPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="1000.0" prefWidth="1000.0" style="-fx-background-color: rgb(51,51,51);" BorderPane.alignment="CENTER">
+      <Pane fx:id="centerPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="1000.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="20.0" />
          </BorderPane.margin></Pane>
    </center>
    <left>
-      <VBox prefHeight="1122.0" prefWidth="289.0" spacing="15.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="1158.0" prefWidth="349.0" spacing="15.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="20.0" />
          </BorderPane.margin>
@@ -67,10 +67,16 @@
                   </VBox>
                </children>
             </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+            <HBox prefWidth="200.0" spacing="15.0">
                <children>
-                  <Label prefHeight="17.0" prefWidth="92.0" styleClass="regularText" text="Selection color" />
+                  <Label prefHeight="20.0" prefWidth="121.0" styleClass="regularText" text="Selection color" />
                   <ComboBox fx:id="selectionColorComboBox" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <HBox prefWidth="200.0" spacing="15.0">
+               <children>
+                  <Label prefHeight="20.0" prefWidth="123.0" styleClass="regularText" text="Selection template" />
+                  <ComboBox fx:id="selectionTemplateComboBox" prefWidth="150.0" />
                </children>
             </HBox>
          </children>

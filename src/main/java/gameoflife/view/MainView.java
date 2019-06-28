@@ -28,6 +28,7 @@ public class MainView extends View {
     private final Pane centerPane;
     private final CheckBox showGridLinesCheckBox;
     private final ComboBox<String> selectionColorComboBox;
+    private final ComboBox<SelectionTemplate> selectionTemplateComboBox;
     private final GridPane gridPane = new GridPane();
     private final List<Node> selected = new ArrayList<>();
     private static final String notSelectedStyle = "-fx-background-color:white";
@@ -54,6 +55,10 @@ public class MainView extends View {
         this.centerPane = (Pane) lookup("#centerPane");
         this.showGridLinesCheckBox = (CheckBox) lookup("#showGridLinesCheckBox");
         this.selectionColorComboBox = (ComboBox) lookup("#selectionColorComboBox");
+        this.selectionTemplateComboBox = (ComboBox) lookup("#selectionTemplateComboBox");
+
+        selectionTemplateComboBox.getItems().addAll(SelectionTemplate.values());
+        selectionTemplateComboBox.getSelectionModel().select(SelectionTemplate.NONE);
         selectionColorComboBox.getItems().addAll(SELECTION_COLOR_LIST);
         selectionColorComboBox.getSelectionModel().select(0);
         setSelectedStyle(selectionColorComboBox.getSelectionModel().getSelectedItem());
@@ -63,6 +68,7 @@ public class MainView extends View {
             startButton.setDisable(true);
             clearButton.setDisable(true);
             selectionColorComboBox.setDisable(true);
+            gridSizeSlider.setDisable(true);
             controller.startGame(speedSlider.getValue(), grid);
         }));
 
@@ -71,12 +77,18 @@ public class MainView extends View {
             startButton.setDisable(false);
             stopButton.setDisable(true);
             clearButton.setDisable(false);
+            gridSizeSlider.setDisable(false);
             selectionColorComboBox.setDisable(false);
         });
         stopButton.setDisable(true);
 
         clearButton.setOnAction(event -> {
             gridPane.getChildren().forEach(node -> node.setStyle(notSelectedStyle));
+            for (int row = 0; row < gridSize; row++) {
+                for (int col = 0; col < gridSize; col++) {
+                    grid[row][col] = 0;
+                }
+            }
             selected.clear();
         });
         gridSizeSlider.setOnMouseDragged(event -> {
@@ -96,6 +108,10 @@ public class MainView extends View {
             selected.forEach(node -> {
                 node.setStyle(selectedStyle);
             });
+        });
+
+        selectionTemplateComboBox.setOnAction((action) -> {
+            selectByTemplate(selectionTemplateComboBox.getSelectionModel().getSelectedItem());
         });
 
         showGridLinesCheckBox.setOnAction(event -> {
@@ -169,8 +185,21 @@ public class MainView extends View {
         }
     }
 
-    public void select(List<Point> deselected, List<Point> selected) {
+    private void selectByTemplate(SelectionTemplate selectionTemplate) {
+        clearButton.fire();
+        selectionTemplate.getSelection(gridSize).forEach(point -> {
+            Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
+            selected.add(node);
+            node.setStyle(selectedStyle);
+            grid[point.x][point.y] = 1;
+        });
+    }
 
+    private void select(List<Point> selected) {
+
+    }
+
+    public void select(List<Point> deselected, List<Point> selected) {
         try {
             selected.forEach(point -> {
                 Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
@@ -183,7 +212,6 @@ public class MainView extends View {
         } catch (ArrayIndexOutOfBoundsException ignored) {
 
         }
-
     }
 
     private void setSelectedStyle(String color) {
