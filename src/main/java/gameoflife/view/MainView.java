@@ -2,22 +2,22 @@ package gameoflife.view;
 
 import gameoflife.controller.MainViewController;
 import gameoflife.utils.ResourceLoader;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
-import java.awt.event.MouseEvent;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainView extends View {
 
@@ -26,26 +26,44 @@ public class MainView extends View {
     private final Button startButton, stopButton, clearButton;
     private final Slider speedSlider, gridSizeSlider;
     private final Pane centerPane;
+    private final CheckBox showGridLinesCheckBox;
+    private final ComboBox<String> selectionColorComboBox;
     private final GridPane gridPane = new GridPane();
     private final List<Node> selected = new ArrayList<>();
     private static final String notSelectedStyle = "-fx-background-color:white";
-    private static final String selectedStyle = "-fx-background-color:red";
+    private static String selectedStyle = "-fx-background-color:green";
+    private int[][] grid;
+    private int gridSize;
+    private static final List<String> SELECTION_COLOR_LIST = new ArrayList<>();
+
+    static {
+        SELECTION_COLOR_LIST.add("red");
+        SELECTION_COLOR_LIST.add("green");
+        SELECTION_COLOR_LIST.add("blue");
+    }
 
     public MainView(MainViewController mainViewController) throws IOException {
-        super(FXMLLoader.load(ResourceLoader.gerResourceURL("mainView.fxml")));
+        super((Parent) FXMLLoader.load(ResourceLoader.gerResourceURL("mainView.fxml")));
         this.controller = mainViewController;
         this.startButton = (Button) lookup("#startButton");
         this.stopButton = (Button) lookup("#stopButton");
+        stopButton.setDisable(true);
         this.clearButton = (Button) lookup("#clearButton");
         this.speedSlider = (Slider) lookup("#speedSlider");
         this.gridSizeSlider = (Slider) lookup("#gridSizeSlider");
         this.centerPane = (Pane) lookup("#centerPane");
+        this.showGridLinesCheckBox = (CheckBox) lookup("#showGridLinesCheckBox");
+        this.selectionColorComboBox = (ComboBox) lookup("#selectionColorComboBox");
+        selectionColorComboBox.getItems().addAll(SELECTION_COLOR_LIST);
+        selectionColorComboBox.getSelectionModel().select(0);
+        setSelectedStyle(selectionColorComboBox.getSelectionModel().getSelectedItem());
 
         startButton.setOnAction((event -> {
             stopButton.setDisable(false);
             startButton.setDisable(true);
             clearButton.setDisable(true);
-            controller.startGame(speedSlider.getValue(), gridPane.getChildren(), selected);
+            selectionColorComboBox.setDisable(true);
+            controller.startGame(speedSlider.getValue(), grid);
         }));
 
         stopButton.setOnAction(event -> {
@@ -53,6 +71,7 @@ public class MainView extends View {
             startButton.setDisable(false);
             stopButton.setDisable(true);
             clearButton.setDisable(false);
+            selectionColorComboBox.setDisable(false);
         });
         stopButton.setDisable(true);
 
@@ -61,28 +80,45 @@ public class MainView extends View {
             selected.clear();
         });
         gridSizeSlider.setOnMouseDragged(event -> {
-            setGridSize(Math.round(gridSizeSlider.getValue()));
+            gridSize = (int) Math.round(gridSizeSlider.getValue());
+            setGridSize(gridSize);
         });
-
+        gridSizeSlider.setOnMouseClicked(event -> {
+            gridSize = (int) Math.round(gridSizeSlider.getValue());
+            setGridSize(gridSize);
+        });
         speedSlider.setOnMouseReleased(event -> {
             controller.changeSpeed(speedSlider.getValue());
         });
 
+        selectionColorComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            setSelectedStyle(newValue);
+            selected.forEach(node -> {
+                node.setStyle(selectedStyle);
+            });
+        });
 
+        showGridLinesCheckBox.setOnAction(event -> {
+            gridPane.setGridLinesVisible(showGridLinesCheckBox.isSelected());
+        });
+        showGridLinesCheckBox.setSelected(true);
         setGridSize(gridSizeSlider.getMin());
         centerPane.getChildren().add(gridPane);
+
+
     }
 
     private void setGridSize(double count) {
+
+        grid = new int[(int) Math.round(count)][(int) Math.round(count)];
         gridPane.getChildren().clear();
         gridPane.setAlignment(Pos.CENTER);
-
+        gridSize = (int) Math.round(count);
         for (int i = 0; i < count; i++) {
             gridPane.addRow(i, getRow(count, i));
         }
-        centerPane.getStyleClass().add("-fx-background-color:black");
         gridPane.setGridLinesVisible(false);
-        gridPane.setGridLinesVisible(true);
+        gridPane.setGridLinesVisible(showGridLinesCheckBox.isSelected());
     }
 
     private Node[] getRow(double count, int rowNumber) {
@@ -90,51 +126,67 @@ public class MainView extends View {
         double size = Math.ceil(centerPane.getPrefHeight() / count);
 
         for (int i = 0; i < count; i++) {
+            grid[rowNumber][i] = 0;
             Pane pane = new Pane();
+            int finalI = i;
             pane.setOnMouseEntered(event -> {
                 if (event.isAltDown() && pane.getStyle().equals(notSelectedStyle)) {
                     this.selected.add(pane);
+                    grid[rowNumber][finalI] = 1;
                     pane.setStyle(selectedStyle);
                 }
                 if (event.isControlDown() && pane.getStyle().equals(selectedStyle)) {
                     this.selected.add(pane);
+                    grid[rowNumber][finalI] = 0;
                     pane.setStyle(notSelectedStyle);
                 }
             });
             pane.setOnMouseClicked(event -> {
-                setPaneAction(pane);
+                setPaneAction(pane, finalI, rowNumber);
             });
             pane.setStyle(notSelectedStyle);
-          /*  Text text=new Text(rowNumber+","+i);
+           /* Text text = new Text(rowNumber + "," + i);
             text.setTextAlignment(TextAlignment.CENTER);
-            pane.getChildren().add(text);*/
-
+            pane.getChildren().add(text);
+*/
             pane.setMinSize(size, size);
             result[i] = pane;
         }
         return result;
     }
 
-    private void setPaneAction(Pane pane) {
+    private void setPaneAction(Pane pane, int column, int row) {
+
         if (pane.getStyle().equals(selectedStyle)) {
             this.selected.remove(pane);
             pane.setStyle(notSelectedStyle);
+            grid[row][column] = 0;
+
         } else {
             this.selected.add(pane);
             pane.setStyle(selectedStyle);
+            grid[row][column] = 1;
         }
     }
 
-    public void select(List<Node> selected) {
-        Platform.runLater(() -> {
-            gridPane.getChildren().forEach(node -> {
-                if (node.getStyle().equals(selectedStyle) && !selected.contains(node)) {
-                    node.setStyle(notSelectedStyle);
-                }
+    public void select(List<Point> deselected, List<Point> selected) {
+
+        try {
+            selected.forEach(point -> {
+                Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
+                node.setStyle(selectedStyle);
             });
-        });
-        selected.forEach(node -> {
-            node.setStyle(selectedStyle);
-        });
+            deselected.forEach(point -> {
+                Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
+                node.setStyle(notSelectedStyle);
+            });
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+
+        }
+
+    }
+
+    private void setSelectedStyle(String color) {
+        selectedStyle = String.format("-fx-background-color:%s", color);
     }
 }

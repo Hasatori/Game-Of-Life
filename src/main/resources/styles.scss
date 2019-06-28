@@ -1,0 +1,34 @@
+$basicFontSize: 14px;
+$headingFontSize: 18px;
+$basicFontColor: rgb(51, 51, 51);
+$buttonFontColor: white;
+
+.heading {
+  -fx-font-size: $headingFontSize;
+  -fx-text-fill: $basicFontColor;
+  -fx-font-weight: bold;
+}
+
+.regularText {
+  -fx-font-size: $basicFontSize;
+  -fx-text-fill: $basicFontColor;
+}
+
+.button {
+  -fx-background-color: #000000,
+linear-gradient(#7ebcea, #2f4b8f),
+linear-gradient(#426ab7, #263e75),
+linear-gradient(#395cab, #223768);
+  -fx-background-insets: 0, 1, 2, 3;
+  -fx-background-radius: 3, 2, 2, 2;
+  -fx-padding: 12 30 12 30;
+  -fx-text-fill: $buttonFontColor;
+  -fx-font-size: $basicFontSize;
+  -fx-font-weight: bold;
+
+}
+
+.button:hover {
+  -fx-cursor: hand;
+}
+
