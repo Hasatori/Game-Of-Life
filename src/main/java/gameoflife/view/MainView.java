@@ -131,7 +131,7 @@ public class MainView extends View {
         setGridSize(gridSize);
         selected.clear();
     }
-    
+
     private void setGridSize(double count) {
 
         grid = new int[(int) Math.round(count)][(int) Math.round(count)];

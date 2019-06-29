@@ -1,12 +1,9 @@
 package gameoflife.view;
 
-import com.sun.org.apache.regexp.internal.RE;
-import com.sun.xml.internal.ws.util.StringUtils;
-import gameoflife.Main;
-import javafx.scene.transform.Rotate;
 
-import javax.swing.text.Position;
-import java.awt.Point;
+import org.apache.commons.lang3.StringUtils;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
