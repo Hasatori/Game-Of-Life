@@ -2,6 +2,7 @@ package gameoflife.view;
 
 import gameoflife.controller.MainViewController;
 import gameoflife.utils.ResourceLoader;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MainView extends View {
@@ -68,6 +70,7 @@ public class MainView extends View {
             startButton.setDisable(true);
             clearButton.setDisable(true);
             selectionColorComboBox.setDisable(true);
+            selectionTemplateComboBox.setDisable(true);
             gridSizeSlider.setDisable(true);
             controller.startGame(speedSlider.getValue(), grid);
         }));
@@ -79,6 +82,7 @@ public class MainView extends View {
             clearButton.setDisable(false);
             gridSizeSlider.setDisable(false);
             selectionColorComboBox.setDisable(false);
+            selectionTemplateComboBox.setDisable(false);
         });
         stopButton.setDisable(true);
 
@@ -92,12 +96,10 @@ public class MainView extends View {
             selected.clear();
         });
         gridSizeSlider.setOnMouseDragged(event -> {
-            gridSize = (int) Math.round(gridSizeSlider.getValue());
-            setGridSize(gridSize);
+            gridSizeSlideAction();
         });
         gridSizeSlider.setOnMouseClicked(event -> {
-            gridSize = (int) Math.round(gridSizeSlider.getValue());
-            setGridSize(gridSize);
+            gridSizeSlideAction();
         });
         speedSlider.setOnMouseReleased(event -> {
             controller.changeSpeed(speedSlider.getValue());
@@ -120,16 +122,23 @@ public class MainView extends View {
         showGridLinesCheckBox.setSelected(true);
         setGridSize(gridSizeSlider.getMin());
         centerPane.getChildren().add(gridPane);
-
+        speedSlider.setValue(speedSlider.getMax() / 2);
 
     }
 
+    private void gridSizeSlideAction() {
+        gridSize = (int) Math.round(gridSizeSlider.getValue());
+        setGridSize(gridSize);
+        selected.clear();
+    }
+    
     private void setGridSize(double count) {
 
         grid = new int[(int) Math.round(count)][(int) Math.round(count)];
         gridPane.getChildren().clear();
         gridPane.setAlignment(Pos.CENTER);
         gridSize = (int) Math.round(count);
+
         for (int i = 0; i < count; i++) {
             gridPane.addRow(i, getRow(count, i));
         }
@@ -142,9 +151,12 @@ public class MainView extends View {
         double size = Math.ceil(centerPane.getPrefHeight() / count);
 
         for (int i = 0; i < count; i++) {
-            grid[rowNumber][i] = 0;
-            Pane pane = new Pane();
             int finalI = i;
+            grid[rowNumber][i] = 0;
+
+
+            Pane pane = new Pane();
+
             pane.setOnMouseEntered(event -> {
                 if (event.isAltDown() && pane.getStyle().equals(notSelectedStyle)) {
                     this.selected.add(pane);
@@ -165,11 +177,13 @@ public class MainView extends View {
             text.setTextAlignment(TextAlignment.CENTER);
             pane.getChildren().add(text);
 */
+
             pane.setMinSize(size, size);
             result[i] = pane;
         }
         return result;
     }
+
 
     private void setPaneAction(Pane pane, int column, int row) {
 
@@ -199,19 +213,23 @@ public class MainView extends View {
 
     }
 
-    public void select(List<Point> deselected, List<Point> selected) {
-        try {
-            selected.forEach(point -> {
-                Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
-                node.setStyle(selectedStyle);
-            });
-            deselected.forEach(point -> {
-                Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
-                node.setStyle(notSelectedStyle);
-            });
-        } catch (ArrayIndexOutOfBoundsException ignored) {
+    public synchronized void select(List<Point> deselected, List<Point> selected) throws InterruptedException {
 
-        }
+        Platform.runLater(() -> {
+            try {
+                selected.forEach(point -> {
+                    Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
+                    node.setStyle(selectedStyle);
+                });
+                deselected.forEach(point -> {
+                    Node node = gridPane.getChildren().get(point.x * gridSize + point.y);
+                    node.setStyle(notSelectedStyle);
+                });
+
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+            }
+        });
+
     }
 
     private void setSelectedStyle(String color) {

@@ -41,7 +41,6 @@ public class GameOfLife extends Thread {
 
     @Override
     public void run() {
-
         try {
             while (!isInterrupted()) {
                 compressedGrid = getCompressedGrid();
@@ -50,11 +49,13 @@ public class GameOfLife extends Thread {
                 mainViewController.setSelected(toDie, toBeBorn);
                 updateSelected();
                 Thread.sleep(MAX_TIME / speed);
+
             }
         } catch (InterruptedException | ArrayIndexOutOfBoundsException ignored) {
 
         }
     }
+
 
     private void updateSelected() {
         selected.addAll(toBeBorn);
@@ -67,7 +68,7 @@ public class GameOfLife extends Thread {
         });
     }
 
-    public  void setSpeed(int speed) {
+    public void setSpeed(int speed) {
         this.speed = speed;
     }
 
@@ -157,7 +158,7 @@ public class GameOfLife extends Thread {
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-          //  e.printStackTrace();
+            //  e.printStackTrace();
             return numberOfNeighbours;
         }
 

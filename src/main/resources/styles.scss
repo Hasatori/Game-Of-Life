@@ -12,6 +12,7 @@ $buttonFontColor: white;
 .regularText {
   -fx-font-size: $basicFontSize;
   -fx-text-fill: $basicFontColor;
+  -fx-font-weight: bold;
 }
 
 .button {

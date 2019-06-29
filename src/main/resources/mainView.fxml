@@ -11,8 +11,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="1287.0" maxWidth="1639.0" minHeight="847.0" minWidth="890.0" prefHeight="1287.0" prefWidth="1639.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <VBox prefHeight="104.0" prefWidth="891.0" BorderPane.alignment="CENTER">
          <children>
@@ -25,14 +26,14 @@
             </HBox>
          </children>
          <padding>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="50.0" />
+            <Insets bottom="15.0" left="15.0" right="15.0" />
          </padding>
       </VBox>
    </bottom>
    <center>
       <Pane fx:id="centerPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="1000.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
-            <Insets top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </BorderPane.margin></Pane>
    </center>
    <left>
@@ -41,7 +42,7 @@
             <Insets top="20.0" />
          </BorderPane.margin>
          <children>
-            <Label prefHeight="21.0" prefWidth="275.0" styleClass="heading" text="Options">
+            <Label prefHeight="27.0" prefWidth="337.0" styleClass="heading" text="Options" underline="true">
                <font>
                   <Font name="Arial Bold" size="18.0" />
                </font>
@@ -69,19 +70,29 @@
             </HBox>
             <HBox prefWidth="200.0" spacing="15.0">
                <children>
-                  <Label prefHeight="20.0" prefWidth="121.0" styleClass="regularText" text="Selection color" />
+                  <Label prefHeight="20.0" prefWidth="139.0" styleClass="regularText" text="Selection color" />
                   <ComboBox fx:id="selectionColorComboBox" prefWidth="150.0" />
                </children>
             </HBox>
             <HBox prefWidth="200.0" spacing="15.0">
                <children>
-                  <Label prefHeight="20.0" prefWidth="123.0" styleClass="regularText" text="Selection template" />
+                  <Label prefHeight="20.0" prefWidth="139.0" styleClass="regularText" text="Selection template" />
                   <ComboBox fx:id="selectionTemplateComboBox" prefWidth="150.0" />
                </children>
             </HBox>
+            <Pane prefHeight="200.0" prefWidth="200.0" />
+            <Label prefHeight="27.0" prefWidth="337.0" styleClass="heading" text="Controls" underline="true">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+            </Label>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="regularText" text="To select:" wrappingWidth="290.13671875" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Cells can be selected by clicking on them, or by holding Alt key and mouse over them" wrappingWidth="296.13671875" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="regularText" text="To deselect:" wrappingWidth="290.13671875" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Cell can be deselected by clicking on it or by holding the Ctrl key and dragging the mouse over " wrappingWidth="296.13671875" />
          </children>
          <padding>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            <Insets bottom="15.0" left="25.0" right="15.0" top="50.0" />
          </padding>
       </VBox>
    </left>

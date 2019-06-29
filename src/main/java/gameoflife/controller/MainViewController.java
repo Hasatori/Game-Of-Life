@@ -39,9 +39,6 @@ public class MainViewController extends Controller {
         }
     }
 
-    public void next() {
-
-    }
 
     public void changeSpeed(double speed) {
         if (gameOfLife != null) {
@@ -49,7 +46,7 @@ public class MainViewController extends Controller {
         }
     }
 
-    public void setSelected(List<Point> deselected, List<Point> selected) {
+    public void setSelected(List<Point> deselected, List<Point> selected) throws InterruptedException {
         view.select(deselected, selected);
     }
 
