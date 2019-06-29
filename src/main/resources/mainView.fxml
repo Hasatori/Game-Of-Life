@@ -96,4 +96,11 @@
          </padding>
       </VBox>
    </left>
+   <top>
+      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="136.0" prefWidth="1296.0" text="Game of Life" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+   </top>
 </BorderPane>
