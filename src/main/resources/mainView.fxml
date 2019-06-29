@@ -63,7 +63,7 @@
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Label styleClass="regularText" text="Grid size" />
-                        <Slider fx:id="gridSizeSlider" max="200.0" min="40.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="20.0" />
+                        <Slider fx:id="gridSizeSlider" max="120.0" min="40.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="20.0" />
                      </children>
                   </VBox>
                </children>

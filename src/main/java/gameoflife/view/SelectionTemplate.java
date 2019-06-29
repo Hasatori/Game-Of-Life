@@ -167,7 +167,7 @@ enum SelectionTemplate {
             selection.add(new Point(centerX - 1, centerY));
             selection.add(new Point(centerX, centerY + 1));
         }
-    };;
+    };
 
 
     private static final Random RANDOM = new Random();
