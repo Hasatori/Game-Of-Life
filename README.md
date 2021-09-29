@@ -4,7 +4,7 @@ Game works on priciples described here https://en.wikipedia.org/wiki/Conway%27s_
 
 ![caption](./docs/preview.gif)
 
-Working jar download link: <a href="https://github.com/Hasatori/GameOfLife/raw/master/GameOfLife-1.0-SNAPSHOT-jar-with-dependencies.jar" download>GameOfLife-1.0-SNAPSHOT-jar-with-dependencies.jar</a>
+Jar download link: <a href="https://github.com/Hasatori/GameOfLife/raw/master/GameOfLife-1.0-SNAPSHOT-jar-with-dependencies.jar" download>GameOfLife-1.0-SNAPSHOT-jar-with-dependencies.jar</a>
 
 ## How to start
 ```console 
